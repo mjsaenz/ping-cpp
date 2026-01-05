@@ -25,18 +25,10 @@ templatePath = "%s/templates" % scriptPath
 
 g = Generator()
 
-f = open("%s/ping-device-ping1d.h" % args.output_directory, "w")
-f.write(g.generate("%s/ping1d.json" % definitionPath, "%s/ping-device-ping1d.h.in" % templatePath))
+f = open("%s/ping-device-s500.h" % args.output_directory, "w")
+f.write(g.generate("%s/s500.json" % definitionPath, "%s/ping-device-s500.h.in" % templatePath))
 f.close()
 
-f = open("%s/ping-device-ping1d.cpp" % args.output_directory, "w")
-f.write(g.generate("%s/ping1d.json" % definitionPath, "%s/ping-device-ping1d.cpp.in" % templatePath))
-f.close()
-
-f = open("%s/ping-device-ping360.h" % args.output_directory, "w")
-f.write(g.generate("%s/ping360.json" % definitionPath, "%s/ping-device-ping360.h.in" % templatePath))
-f.close()
-
-f = open("%s/ping-device-ping360.cpp" % args.output_directory, "w")
-f.write(g.generate("%s/ping360.json" % definitionPath, "%s/ping-device-ping360.cpp.in" % templatePath))
+f = open("%s/ping-device-s500.cpp" % args.output_directory, "w")
+f.write(g.generate("%s/s500.json" % definitionPath, "%s/ping-device-s500.cpp.in" % templatePath))
 f.close()

@@ -28,8 +28,7 @@ g = Generator()
 
 definitions = [ "bluebps",
                 "common",
-                "ping1d",
-                "ping360"]
+                "s500"]
 
 # Create global json
 mergedJson = {"global": {}}

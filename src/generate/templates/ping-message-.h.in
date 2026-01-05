@@ -124,7 +124,7 @@ public:
                 "  {{payload.name}}: %s\n"
 {% endif %}
 {% else %}
-                "  {{payload.name}}: %" {{generator.get_printf_format(payload.type)}} "\n"
+                "  {{payload.name}}:  {{generator.get_printf_format(payload.type)}}\n"
 {% endif %}
 {% endfor %}
 {% for payload in m.payload %}
