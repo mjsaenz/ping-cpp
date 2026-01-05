@@ -15,14 +15,15 @@ S500::~S500()
 {% endfor %}
 }
 
-bool S500::initialize(uint16_t pingIntervalMs)
+bool S500::initialize(int16_t msec_per_ping)
 {
     if (!PingDevice::initialize()) {
         return false;
     }
 
-    // Configure ping interval
-    if (!set_ping_interval(pingIntervalMs)) {
+    // Configure ping parameters
+    // We choose distance2 as the default report to enable pinging
+    if (!set_ping_params(0, 5000, -1, msec_per_ping, 0, 1223, 0, 0, 0)) {
         return false;
     }
 
@@ -36,7 +37,7 @@ void S500::_handleMessage(const ping_message* message)
 {% if not messages["get"][msg].deprecated %}
         case S500Id::{{msg|upper}}:
         {
-            const ping1d_{{msg}}* message_{{msg}} = static_cast<const ping1d_{{msg}}*>(message);
+            const s500_{{msg}}* message_{{msg}} = static_cast<const s500_{{msg}}*>(message);
 {% for field in messages["get"][msg].payload %}
 {% if generator.is_vector(field.type) %}
             if (message_{{msg}}->{{field.name}}_length() > {{msg}}_data.{{field.name}}_length) {
@@ -47,7 +48,7 @@ void S500::_handleMessage(const ping_message* message)
             }
 
             // If pointer is invalid, make sure to abort, there is no more memory!
-            if (profile_data.profile_data == nullptr) {
+            if ({{msg}}_data.{{field.name}} == nullptr) {
                 {{msg}}_data.{{field.name}}_length = -1;
                 return;
             }
@@ -70,29 +71,34 @@ void S500::_handleMessage(const ping_message* message)
     PingDevice::_handleMessage(message);
 }
 
-{% for msg in messages["set"]|sort %}
-bool S500::{{msg}}({% for field in messages["set"][msg].payload %}{{generator.get_type_string(field.type)}} _{{field.name}}, {% endfor %}bool verify)
+{% for msg in messages["control"]|sort %}
+bool S500::{{msg}}({% for field in messages["control"][msg].payload %}{{generator.get_type_string(field.type)}} _{{field.name}}, {% endfor %}bool verify)
 {
-    ping1d_{{msg}} message;
-{% for field in messages["set"][msg].payload %}
+    s500_{{msg}} message;
+{% for field in messages["control"][msg].payload %}
     message.set_{{field.name}}(_{{field.name}});
 {% endfor %}
     writeMessage(message);
+
+{% if msg == 'set_ping_params' %}
+    // Verification for set_ping_params is not implemented, as it requires
+    // multiple get messages to be requested and checked (e.g., range, gain_index).
+    // The device will reply with a command_ack message, which is handled by the base class.
+    (void)verify; // To avoid unused parameter warning
+    return true; // Assume success if writeMessage does not throw
+{% else %}
     // Check if we have a reply from the device
     if (!request(S500Id::{{msg|replace("set_", "")|upper}})) {
         return false;
     }
     // Read back the data and check that changes have been applied
     if (verify
-{% if messages["set"][msg].payload %}
-{% if msg != "set_device_id" %}
-        && ({% for field in messages["set"][msg].payload %}{{msg|replace("set_", "")}}_data.{{field.name}} != _{{field.name}}{{ "\n        || " if not loop.last }}{% endfor %})) {
-{% else %}
-        && ({% for field in messages["set"][msg].payload %}{{field.name}} != _{{field.name}}{{ "\n        || " if not loop.last }}{% endfor %})) {
-{% endif %}
+{% if messages["control"][msg].payload %}
+        && ({% for field in messages["control"][msg].payload %}{{msg|replace("set_", "")}}_data.{{field.name}} != _{{field.name}}{{ "\n        || " if not loop.last }}{% endfor %})) {
 {% endif %}
         return false;
     }
     return true;
+{% endif %}
 }
 {% endfor %}

@@ -62,7 +62,7 @@ if (PING_CPP_BUILD_TESTS)
         ${Boost_LIBRARIES}
         fmt::fmt
     )
-
+    
     # test-device-ping360
     add_executable(test-device-ping360)
     target_include_directories(test-device-ping360 PRIVATE lib/fmt/include/)
@@ -73,6 +73,24 @@ if (PING_CPP_BUILD_TESTS)
     )
     target_link_libraries(
         test-device-ping360
+    PRIVATE
+        DEVICE
+        HAL
+        PING_MESSAGES
+        ${Boost_LIBRARIES}
+        fmt::fmt
+    )
+
+    # test-device-s500
+    add_executable(test-device-s500)
+    target_include_directories(test-device-s500 PRIVATE lib/fmt/include/)
+    target_sources(
+        test-device-s500
+    PRIVATE
+        test/test-device-s500.cpp
+    )
+    target_link_libraries(
+        test-device-s500
     PRIVATE
         DEVICE
         HAL

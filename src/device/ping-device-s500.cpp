@@ -9,14 +9,9 @@ S500::~S500()
     }
 }
 
-bool S500::initialize(uint16_t pingIntervalMs)
+bool S500::initialize()
 {
     if (!PingDevice::initialize()) {
-        return false;
-    }
-
-    // Configure ping interval
-    if (!set_ping_interval(pingIntervalMs)) {
         return false;
     }
 
@@ -28,14 +23,14 @@ void S500::_handleMessage(const ping_message* message)
     switch (message->message_id()) {
         case S500Id::ALTITUDE:
         {
-            const ping1d_altitude* message_altitude = static_cast<const ping1d_altitude*>(message);
+            const s500_altitude* message_altitude = static_cast<const s500_altitude*>(message);
             altitude_data.altitude_mm = message_altitude->altitude_mm();
             altitude_data.quality = message_altitude->quality();
         }
         break;
         case S500Id::DISTANCE2:
         {
-            const ping1d_distance2* message_distance2 = static_cast<const ping1d_distance2*>(message);
+            const s500_distance2* message_distance2 = static_cast<const s500_distance2*>(message);
             distance2_data.ping_distance_mm = message_distance2->ping_distance_mm();
             distance2_data.averaged_distance_mm = message_distance2->averaged_distance_mm();
             distance2_data.reserved = message_distance2->reserved();
@@ -46,7 +41,7 @@ void S500::_handleMessage(const ping_message* message)
         break;
         case S500Id::FW_VERSION:
         {
-            const ping1d_fw_version* message_fw_version = static_cast<const ping1d_fw_version*>(message);
+            const s500_fw_version* message_fw_version = static_cast<const s500_fw_version*>(message);
             fw_version_data.device_type = message_fw_version->device_type();
             fw_version_data.device_model = message_fw_version->device_model();
             fw_version_data.version_major = message_fw_version->version_major();
@@ -55,25 +50,25 @@ void S500::_handleMessage(const ping_message* message)
         break;
         case S500Id::GAIN_INDEX:
         {
-            const ping1d_gain_index* message_gain_index = static_cast<const ping1d_gain_index*>(message);
+            const s500_gain_index* message_gain_index = static_cast<const s500_gain_index*>(message);
             gain_index_data.gain_index = message_gain_index->gain_index();
         }
         break;
         case S500Id::PING_RATE_MSEC:
         {
-            const ping1d_ping_rate_msec* message_ping_rate_msec = static_cast<const ping1d_ping_rate_msec*>(message);
+            const s500_ping_rate_msec* message_ping_rate_msec = static_cast<const s500_ping_rate_msec*>(message);
             ping_rate_msec_data.msec_per_ping = message_ping_rate_msec->msec_per_ping();
         }
         break;
         case S500Id::PROCESSOR_DEGC:
         {
-            const ping1d_processor_degC* message_processor_degC = static_cast<const ping1d_processor_degC*>(message);
+            const s500_processor_degC* message_processor_degC = static_cast<const s500_processor_degC*>(message);
             processor_degC_data.centi_degC = message_processor_degC->centi_degC();
         }
         break;
         case S500Id::PROFILE6_T:
         {
-            const ping1d_profile6_t* message_profile6_t = static_cast<const ping1d_profile6_t*>(message);
+            const s500_profile6_t* message_profile6_t = static_cast<const s500_profile6_t*>(message);
             profile6_t_data.ping_number = message_profile6_t->ping_number();
             profile6_t_data.start_mm = message_profile6_t->start_mm();
             profile6_t_data.length_mm = message_profile6_t->length_mm();
@@ -113,14 +108,14 @@ void S500::_handleMessage(const ping_message* message)
         break;
         case S500Id::RANGE:
         {
-            const ping1d_range* message_range = static_cast<const ping1d_range*>(message);
+            const s500_range* message_range = static_cast<const s500_range*>(message);
             range_data.start_mm = message_range->start_mm();
             range_data.length_mm = message_range->length_mm();
         }
         break;
         case S500Id::SPEED_OF_SOUND:
         {
-            const ping1d_speed_of_sound* message_speed_of_sound = static_cast<const ping1d_speed_of_sound*>(message);
+            const s500_speed_of_sound* message_speed_of_sound = static_cast<const s500_speed_of_sound*>(message);
             speed_of_sound_data.sos_mm_per_sec = message_speed_of_sound->sos_mm_per_sec();
         }
         break;
@@ -134,7 +129,7 @@ void S500::_handleMessage(const ping_message* message)
 
 bool S500::set_ping_params(uint32_t _start_mm, uint32_t _length_mm, int16_t _gain_index, int16_t _msec_per_ping, uint16_t _pulse_len_usec, uint16_t _report_id, uint16_t _reserved, uint8_t _chirp, uint8_t _decimation, bool verify)
 {
-    ping1d_set_ping_params message;
+    s500_set_ping_params message;
     message.set_start_mm(_start_mm);
     message.set_length_mm(_length_mm);
     message.set_gain_index(_gain_index);
@@ -166,7 +161,7 @@ bool S500::set_ping_params(uint32_t _start_mm, uint32_t _length_mm, int16_t _gai
 }
 bool S500::set_speed_of_sound(uint32_t _sos_mm_per_sec, bool verify)
 {
-    ping1d_set_speed_of_sound message;
+    s500_set_speed_of_sound message;
     message.set_sos_mm_per_sec(_sos_mm_per_sec);
     writeMessage(message);
     // Check if we have a reply from the device

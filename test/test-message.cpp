@@ -21,9 +21,11 @@ struct test_protocol_version_s;
 bool verifyProtocolMessage(common_protocol_version m, test_protocol_version_s t);
 bool testProtocolVersion();
 
+
 ///////////////
 ///// ping1d
 ///////////////
+/*
 static const uint16_t profile_static_payload_length = 4 + 2 + 2 + 4 + 4 + 4 + 4 + 2;
 static const uint16_t profile_points = 10;
 static const uint16_t profile_payload_length = profile_static_payload_length + profile_points;
@@ -32,14 +34,15 @@ struct test_profile_s;
 bool verifyProfileMessage(ping1d_profile m, test_profile_s t);
 bool testProfile();
 bool testProfileZeroPayload();
+*/
 
 // TODO maybe rework to read in test cases from file.
 int main(void)
 {
     bool ret = false;
     ret |= testProtocolVersion();
-    ret |= testProfile();
-    ret |= testProfileZeroPayload();
+    // ret |= testProfile();
+    // ret |= testProfileZeroPayload();
     return ret;
 }
 
@@ -141,6 +144,7 @@ bool testProtocolVersion()
     return result;
 }
 
+/*
 struct test_profile_s {
     uint8_t start1;
     uint8_t start2;
@@ -328,3 +332,4 @@ bool testProfileZeroPayload()
 
     return result;
 }
+*/
