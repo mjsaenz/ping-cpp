@@ -22,8 +22,8 @@ bool S500::initialize(int16_t msec_per_ping)
     }
 
     // Configure ping parameters
-    // We choose distance2 as the default report to enable pinging
-    if (!set_ping_params(0, 5000, -1, msec_per_ping, 0, 1223, 0, 0, 0)) {
+    // We choose profile6_t as the default report to enable pinging
+    if (!set_ping_params(0, 5000, -1, msec_per_ping, 0, S500Id::PROFILE6_T, 0, 0, 0)) {
         return false;
     }
 

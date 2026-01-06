@@ -36,6 +36,7 @@ public:
      */
     bool initialize(int16_t msec_per_ping = 50);
 
+// This loop is the critical part. It must iterate over "control" for s500.json.
 {% for msg in messages["control"] %}
     /**
      * @brief {{messages["control"][msg].description}}

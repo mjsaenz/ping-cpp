@@ -73,6 +73,9 @@ public:
         }
     }
 
+    {# Set to track which ids have already been seen, avoiding duplicate cases #}
+    {% set seen = namespace(ids=[]) %}
+
     /**
      * @brief Helper function that provides the name of a message from the message ID number
      *
@@ -85,16 +88,23 @@ public:
 {% for messages in global[definition] %}
 {% for message_type in global[definition][messages] %}
 {% for message in global[definition][messages][message_type] %}
-            case(PingEnumNamespace::PingMessageId::{{definition|upper}}_{{message|upper}}):
-                return "{{message|upper}}";
+
+{% set msg_id = global[definition][messages][message_type][message].id %}
+{% if msg_id not in seen.ids %}
+{% set _ = seen.ids.append(msg_id) %}
+        case PingEnumNamespace::PingMessageId::{{definition|upper}}_{{message|upper}}:
+            return "{{message|upper}}";
+{% endif %}
+
 {% endfor %}
 {% endfor %}
 {% endfor %}
 {% endfor %}
-            default:
-                return "UNKNOWN";
-        }
+        default:
+            return "UNKNOWN";
     }
+}
+
 
 private:
     PingHelper() = default;
